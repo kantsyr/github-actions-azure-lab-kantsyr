@@ -6,11 +6,9 @@ on:
 
 env:
   IMAGE_REGISTRY_URL: ghcr.io
-  AZURE_RESOURCE_GROUP: cd-with-actions
+  AZURE_RESOURCE_GROUP: cd-with-actions-2
   AZURE_APP_PLAN: actions-ttt-deployment
-  AZURE_LOCATION: eastus2
-
-
+  AZURE_LOCATION: eastus
   AZURE_WEBAPP_NAME: kantsyr-ttt-app
 
 jobs:
@@ -28,26 +26,39 @@ jobs:
 
       - name: Create Azure resource group
         run: |
-          az group create --location ${{env.AZURE_LOCATION}} --name ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+          az group create \
+            --location ${{ env.AZURE_LOCATION }} \
+            --name ${{ env.AZURE_RESOURCE_GROUP }} \
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create Azure app service plan
         run: |
-          az appservice plan create --resource-group ${{env.AZURE_RESOURCE_GROUP}} --name ${{env.AZURE_APP_PLAN}} --is-linux --sku B1 --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+          az appservice plan create \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.AZURE_APP_PLAN }} \
+            --is-linux \
+            --sku B1 \
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create webapp resource
         run: |
-          az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }} --deployment-container-image-name nginx --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+          az webapp create \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --plan ${{ env.AZURE_APP_PLAN }} \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --deployment-container-image-name nginx \
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Configure webapp to use GHCR
         run: |
           az webapp config container set \
             --docker-custom-image-name nginx \
-            --docker-registry-server-password ${{secrets.CR_PAT}} \
-            --docker-registry-server-url https://${{env.IMAGE_REGISTRY_URL}} \
-            --docker-registry-server-user ${{github.actor}} \
+            --docker-registry-server-password ${{ secrets.CR_PAT }} \
+            --docker-registry-server-url https://${{ env.IMAGE_REGISTRY_URL }} \
+            --docker-registry-server-user ${{ github.actor }} \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
   destroy-azure-resources:
     runs-on: ubuntu-latest
@@ -63,4 +74,8 @@ jobs:
 
       - name: Destroy Azure environment
         run: |
-          az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}} --yes
+          az group delete \
+            --name ${{ env.AZURE_RESOURCE_GROUP }} \
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} \
+            --yes \
+            --no-wait
