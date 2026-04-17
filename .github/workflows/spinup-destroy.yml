@@ -31,29 +31,14 @@ jobs:
             --name ${{ env.AZURE_RESOURCE_GROUP }} \
             --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Create Azure app service plan
-        run: |
-          echo "Skipping Azure creation due to quota"
+      - name: Create Azure app service plan (SKIP)
+        run: echo "skip deployment for lab"
 
-      - name: Create webapp resource
-        run: |
-          az webapp create \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --plan ${{ env.AZURE_APP_PLAN }} \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --deployment-container-image-name nginx \
-            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Create webapp resource (SKIP)
+        run: echo "skip deployment for lab"
 
-      - name: Configure webapp to use GHCR
-        run: |
-          az webapp config container set \
-            --docker-custom-image-name nginx \
-            --docker-registry-server-password ${{ secrets.CR_PAT }} \
-            --docker-registry-server-url https://${{ env.IMAGE_REGISTRY_URL }} \
-            --docker-registry-server-user ${{ github.actor }} \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Configure webapp (SKIP)
+        run: echo "skip deployment for lab"
 
   destroy-azure-resources:
     runs-on: ubuntu-latest
