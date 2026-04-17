@@ -33,12 +33,7 @@ jobs:
 
       - name: Create Azure app service plan
         run: |
-          az appservice plan create \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --name ${{ env.AZURE_APP_PLAN }} \
-            --is-linux \
-            --sku B1 \
-            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          echo "Skipping Azure creation due to quota"
 
       - name: Create webapp resource
         run: |
